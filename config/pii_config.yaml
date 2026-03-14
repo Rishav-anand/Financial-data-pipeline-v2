@@ -1,0 +1,22 @@
+datasets:
+
+  financial:
+    allowed_formats:
+      - csv
+      - parquet
+      - json
+
+    pii_columns:
+      - account_number
+      - customer_name
+      - email
+
+  customers:
+    allowed_formats:
+      - parquet
+      - json
+
+    pii_columns:
+      - customer_id
+      - email
+      - phone_number
