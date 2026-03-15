@@ -22,48 +22,31 @@ FAILED_PREFIX = "failed/"
 
 s3 = boto3.client("s3")
 
-
 def download_file_from_s3(s3_key):
-
     local_path = os.path.join(tempfile.gettempdir(), os.path.basename(s3_key))
-
     s3.download_file(S3_BUCKET, s3_key, local_path)
-
     return local_path
 
-
 def upload_file_to_s3(local_path, s3_key):
-
     s3.upload_file(local_path, S3_BUCKET, s3_key)
 
-
 def move_s3_file(source_key, target_key):
-
     s3.copy_object(
         Bucket=S3_BUCKET,
         CopySource={'Bucket': S3_BUCKET, 'Key': source_key},
         Key=target_key
     )
-
     s3.delete_object(Bucket=S3_BUCKET, Key=source_key)
 
 
 def process_files():
-
     files = get_incoming_files()
-
     for file_key in files:
-
         try:
-
             print(f"Processing {file_key}")
-
             dataset = extract_dataset_name(file_key)
-
             file_format = detect_file_format(file_key)
-
             allowed_formats = get_allowed_formats(dataset)
-
             if file_format not in allowed_formats:
                 raise Exception("Format not allowed")
 
@@ -102,12 +85,10 @@ def process_files():
 
             # Upload encrypted file to S3 processed folder
             processed_key = PROCESSED_PREFIX + os.path.basename(file_key)
-
             upload_file_to_s3(output_file, processed_key)
 
             # Save encrypted data key file
             key_file = output_file + ".key"
-
             with open(key_file, "wb") as f:
                 f.write(encrypted_data_key)
 
@@ -115,21 +96,13 @@ def process_files():
 
             # Move original file to archive
             archive_key = ARCHIVE_PREFIX + os.path.basename(file_key)
-
             move_s3_file(file_key, archive_key)
-
             print(f"Success → {processed_key}")
 
         except Exception as e:
-
             print("Failed:", e)
-
             try:
-
                 failed_key = FAILED_PREFIX + os.path.basename(file_key)
-
                 move_s3_file(file_key, failed_key)
-
             except Exception as move_error:
-
                 print("Failed to move file to failed folder:", move_error)
