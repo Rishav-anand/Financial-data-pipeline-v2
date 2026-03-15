@@ -11,7 +11,7 @@ from src.entitlement_framework.pii_encryptor import generate_data_key, encrypt_d
 
 
 # S3 CONFIG
-S3_BUCKET = "financial-data-pipeline-project"
+S3_BUCKET = "financial-data-pipeline-project-v2"
 
 RAW_PREFIX = "raw/"
 PROCESSING_PREFIX = "processing/"
