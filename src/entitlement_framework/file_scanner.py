@@ -1,17 +1,24 @@
-import os
+import boto3
 
-RAW_FOLDER = "data/raw"
+# S3 configuration
+S3_BUCKET = "financial-data-pipeline-project-v2"
+RAW_PREFIX = "raw/"
+
+s3 = boto3.client("s3")
 
 def get_incoming_files():
-
     files = []
-
-    if not os.path.exists(RAW_FOLDER):
+    response = s3.list_objects_v2(
+        Bucket=S3_BUCKET,
+        Prefix=RAW_PREFIX
+    )
+    if "Contents" not in response:
         return files
-
-    for file in os.listdir(RAW_FOLDER):
-        path = os.path.join(RAW_FOLDER, file)
-        if os.path.isfile(path):
-            files.append(path)
+    for obj in response["Contents"]:
+        key = obj["Key"]
+        # skip folder itself
+        if key.endswith("/"):
+            continue
+        files.append(key)
 
     return files
